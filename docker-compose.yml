@@ -6,6 +6,23 @@ services:
       - "5000:5000"
     environment:
       SECRET_KEY: healthcure-docker-secret
-      DATABASE_URL: sqlite:///healthcure.db
+      DATABASE_URL: postgresql://healthcure_user:healthcure_password@db:5432/healthcure_db
+    depends_on:
+      - db
     volumes:
       - .:/app
+
+  db:
+    image: postgres:16
+    container_name: healthcure-db
+    environment:
+      POSTGRES_USER: healthcure_user
+      POSTGRES_PASSWORD: healthcure_password
+      POSTGRES_DB: healthcure_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  postgres_data:
