@@ -1,0 +1,16 @@
+.git
+.gitignore
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.venv/
+venv/
+env/
+instance/
+healthcure.db
+static/uploads/
+data/chest_xray/
+__MACOSX/
+.DS_Store
