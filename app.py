@@ -513,8 +513,13 @@ def api_predict_diabetes():
     except ValueError as error:
         return jsonify({"error": str(error)}), 400
 
-
+@app.before_request
+def create_tables_once():
+    if not getattr(app, "_tables_created", False):
+        db.create_all()
+        app._tables_created = True
 # ── Run ───────────────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=5000)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(debug=True, host="0.0.0.0", port=port)
