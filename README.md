@@ -1,30 +1,46 @@
 # HealthCure
 
-HealthCure is a Flask-based machine learning web application that predicts possible risks for heart disease, diabetes, and pneumonia. It was built as an academic project to demonstrate how traditional machine learning models and deep learning image classification can be integrated into a simple healthcare-focused web app.
+HealthCure is a full-stack machine learning healthcare web application built with Flask. It allows users to register, log in, predict possible heart disease, diabetes, and pneumonia risk, and view their previous prediction history.
 
-> Disclaimer: HealthCure is a student project and is not intended for real medical diagnosis. Users should always consult a qualified medical professional for health-related decisions.
+The project combines traditional machine learning models, deep learning image classification, authentication, database storage, REST API endpoints, Docker support, and cloud deployment preparation.
+
+> **Disclaimer:** HealthCure is an academic project and is not intended for real medical diagnosis. Users should always consult a qualified medical professional for health-related decisions.
 
 ## Features
 
-- Heart disease prediction using clinical health inputs
-- Diabetes prediction using metabolic and health measurements
-- Pneumonia detection from chest X-ray image uploads
-- Confidence score display for each prediction
-- Flask web interface with separate pages for each disease
-- Saved machine learning models for faster prediction
-- Simple route structure and reusable HTML templates
+- User registration and login
+- Password hashing for secure authentication
+- Heart disease prediction using a Random Forest model
+- Diabetes prediction using an SVM model
+- Pneumonia detection using a MobileNetV2-based deep learning model
+- Chest X-ray image upload
+- Prediction confidence score display
+- Prediction history stored in a database
+- REST API endpoints for user profile and prediction history
+- Docker support
+- PostgreSQL support
+- Cloud deployment-ready configuration
+- Responsive Flask template UI
 
 ## Tech Stack
 
 - Python
 - Flask
-- HTML, CSS, Bootstrap
+- Flask-Login
+- Flask-SQLAlchemy
+- HTML
+- CSS
+- Bootstrap
+- SQLite / PostgreSQL
 - NumPy
 - Pandas
 - scikit-learn
 - TensorFlow / Keras
 - Pillow
 - Joblib
+- Docker
+- Gunicorn
+- Render deployment configuration
 
 ## Machine Learning Models
 
@@ -41,9 +57,14 @@ flowchart TD
     User["Browser / User"] -->|HTTP Request| Flask["Flask app.py"]
 
     Flask --> Home["/ Home Page"]
+    Flask --> Auth["Login / Register"]
     Flask --> H["/heart POST"]
     Flask --> D["/diabetes POST"]
     Flask --> P["/pneumonia POST"]
+    Flask --> Hist["/history"]
+
+    Auth --> DB["Database"]
+    Hist --> DB
 
     H --> HS["scaler_heart.pkl\nheart_model.pkl\nRandomForest"]
     D --> DS["scaler_diabetes.pkl\ndiabetes_model.pkl\nSVM"]
@@ -53,9 +74,9 @@ flowchart TD
     DS --> DR["Result + Confidence"]
     PS --> PR["Result + Confidence"]
 
-    HR --> Flask
-    DR --> Flask
-    PR --> Flask
+    HR --> DB
+    DR --> DB
+    PR --> DB
 
     Flask -->|Render Template| User
 ```
@@ -65,9 +86,14 @@ flowchart TD
 ```text
 healthcure/
 ├── app.py
+├── models_db.py
 ├── requirements.txt
 ├── train_models.py
 ├── setup_data.py
+├── Dockerfile
+├── docker-compose.yml
+├── render.yaml
+├── .python-version
 ├── models/
 │   ├── heart_model.pkl
 │   ├── scaler_heart.pkl
@@ -79,24 +105,61 @@ healthcure/
 │   ├── index.html
 │   ├── heart.html
 │   ├── diabetes.html
-│   └── pneumonia.html
+│   ├── pneumonia.html
+│   ├── login.html
+│   ├── register.html
+│   └── history.html
 ├── static/
-│   └── css/
-│       └── style.css
+│   ├── css/
+│   │   └── style.css
+│   └── uploads/
+├── screenshots/
 └── tests/
     └── test_smoke.py
 ```
 
+## Screenshots
+
+Add screenshots to the `screenshots/` folder and update the links below.
+
+### Home Page
+
+![Home Page](screenshots/home.png)
+
+### Login
+
+![Login](screenshots/login.png)
+
+### Register
+
+![Register](screenshots/register.png)
+
+### Heart Disease Prediction
+
+![Heart Disease Prediction](screenshots/heart-result.png)
+
+### Diabetes Prediction
+
+![Diabetes Prediction](screenshots/diabetes-result.png)
+
+### Pneumonia Detection
+
+![Pneumonia Detection](screenshots/pneumonia-result.png)
+
+### Prediction History
+
+![Prediction History](screenshots/history.png)
+
 ## How To Run Locally
 
-1. Clone the repository:
+### 1. Clone The Repository
 
 ```bash
 git clone https://github.com/captainnemo113-art/healthcure.git
 cd healthcure
 ```
 
-2. Create and activate a virtual environment:
+### 2. Create Virtual Environment
 
 ```bash
 python -m venv .venv
@@ -114,34 +177,141 @@ On macOS/Linux:
 source .venv/bin/activate
 ```
 
-3. Install dependencies:
+### 3. Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-4. Run the Flask app:
+### 4. Create Environment File
+
+Create a `.env` file in the project root:
+
+```env
+SECRET_KEY=change-this-secret-key
+DATABASE_URL=sqlite:///healthcure.db
+```
+
+### 5. Initialize Database
+
+```bash
+flask --app app init-db
+```
+
+### 6. Run The App
 
 ```bash
 python app.py
 ```
 
-5. Open the app in your browser:
+Open:
 
 ```text
 http://127.0.0.1:5000
 ```
 
+## Run With Docker
+
+Build and start the app:
+
+```bash
+docker compose up --build
+```
+
+Initialize the database inside the container:
+
+```bash
+docker compose exec web flask --app app init-db
+```
+
+Open:
+
+```text
+http://localhost:5000
+```
+
+To stop Docker:
+
+```bash
+docker compose down
+```
+
+## REST API Endpoints
+
+Authentication is session-based, so API routes require the user to be logged in.
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| GET | `/api/me` | Returns the logged-in user's profile |
+| GET | `/api/history` | Returns the logged-in user's prediction history |
+| POST | `/api/predict/heart` | Runs heart disease prediction |
+| POST | `/api/predict/diabetes` | Runs diabetes prediction |
+
+Example heart prediction JSON:
+
+```json
+{
+  "age": 54,
+  "sex": 1,
+  "cp": 0,
+  "trestbps": 130,
+  "chol": 250,
+  "fbs": 0,
+  "restecg": 1,
+  "thalach": 150,
+  "exang": 0,
+  "oldpeak": 1.5,
+  "slope": 1,
+  "ca": 0,
+  "thal": 3
+}
+```
+
+Example diabetes prediction JSON:
+
+```json
+{
+  "pregnancies": 2,
+  "glucose": 120,
+  "blood_pressure": 70,
+  "skin_thickness": 20,
+  "insulin": 80,
+  "bmi": 28.5,
+  "dpf": 0.627,
+  "age": 33
+}
+```
+
 ## Testing
 
-Run the smoke tests:
+Run smoke tests:
 
 ```bash
 pip install pytest
 python -m pytest
 ```
 
-These tests check that the main pages load successfully.
+The smoke tests check that the main pages load successfully.
+
+## Deployment
+
+This project includes Render deployment configuration.
+
+Important deployment settings:
+
+```text
+Build Command: pip install -r requirements.txt
+Start Command: gunicorn app:app
+```
+
+Recommended environment variables:
+
+```env
+SECRET_KEY=your-production-secret-key
+DATABASE_URL=your-database-url
+```
+
+The repository includes a `.python-version` file to ensure Render uses a Python version compatible with the ML dependencies.
 
 ## Dataset Notes
 
@@ -155,23 +325,24 @@ For a production-quality project, large datasets should usually be stored outsid
 - Predictions may not be clinically accurate.
 - The models were trained for demonstration purposes and should not be used as medical tools.
 - Real healthcare applications require expert validation, privacy compliance, security review, and clinical testing.
+- The app is not HIPAA-compliant or intended for storing real patient data.
 
 ## Future Improvements
 
-- Add user authentication
-- Improve model accuracy with more data and validation
-- Add detailed model evaluation metrics
+- Add JWT-based API authentication
+- Add admin dashboard
+- Improve model evaluation and display accuracy metrics
 - Add more automated tests
-- Deploy the app online
-- Store uploaded images more securely
-- Add a cleaner dashboard-style UI
+- Add cloud file storage for uploaded images
+- Improve UI with charts and analytics
+- Add proper database migrations with Flask-Migrate
+- Deploy with managed PostgreSQL
+- Add CI/CD with GitHub Actions
 
-## Resume Description
+## Resume Highlight
 
-```text
-Built HealthCure, a Flask-based AI healthcare web app that predicts heart disease, diabetes, and pneumonia using Random Forest, SVM, and MobileNetV2 models, with form-based inputs, X-ray image upload, and confidence score display.
-```
+Built HealthCure, a full-stack Flask machine learning healthcare web app with authentication, database-backed prediction history, REST API endpoints, Docker support, PostgreSQL support, and ML models for heart disease, diabetes, and pneumonia prediction.
 
 ## Author
 
-Developed by `captainnemo113-art` as an academic machine learning web application project.
+Developed by `captainnemo113-art` as an academic full-stack machine learning web application project.
