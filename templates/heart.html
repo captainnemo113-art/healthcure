@@ -1,1 +1,159 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2 class="fw-bold mb-1"><i class="bi bi-heart-fill text-danger me-2"></i>Heart Disease Prediction</h2>
+<p class="text-muted mb-4">Enter the patient's clinical parameters below.</p>
+
+<div class="row g-4">
+
+  <!-- ── Input Form ── -->
+  <div class="col-lg-7">
+    <div class="card shadow-sm border-0">
+      <div class="card-body p-4">
+        <form method="POST">
+
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Age</label>
+              <input type="number" name="age" class="form-control" min="1" max="120" placeholder="e.g. 54" required />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Sex <small class="text-muted">(1=Male, 0=Female)</small></label>
+              <select name="sex" class="form-select" required>
+                <option value="">Select</option>
+                <option value="1">Male</option>
+                <option value="0">Female</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Chest Pain Type <small class="text-muted">(0–3)</small></label>
+              <select name="cp" class="form-select" required>
+                <option value="">Select</option>
+                <option value="0">0 — Typical Angina</option>
+                <option value="1">1 — Atypical Angina</option>
+                <option value="2">2 — Non-Anginal Pain</option>
+                <option value="3">3 — Asymptomatic</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Resting Blood Pressure <small class="text-muted">(mm Hg)</small></label>
+              <input type="number" name="trestbps" class="form-control" placeholder="e.g. 130" required />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Serum Cholesterol <small class="text-muted">(mg/dl)</small></label>
+              <input type="number" name="chol" class="form-control" placeholder="e.g. 250" required />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Fasting Blood Sugar &gt;120 mg/dl</label>
+              <select name="fbs" class="form-select" required>
+                <option value="">Select</option>
+                <option value="1">Yes (1)</option>
+                <option value="0">No (0)</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Resting ECG Results <small class="text-muted">(0–2)</small></label>
+              <select name="restecg" class="form-select" required>
+                <option value="">Select</option>
+                <option value="0">0 — Normal</option>
+                <option value="1">1 — ST-T Wave Abnormality</option>
+                <option value="2">2 — Left Ventricular Hypertrophy</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Max Heart Rate Achieved</label>
+              <input type="number" name="thalach" class="form-control" placeholder="e.g. 150" required />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Exercise Induced Angina</label>
+              <select name="exang" class="form-select" required>
+                <option value="">Select</option>
+                <option value="1">Yes (1)</option>
+                <option value="0">No (0)</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">ST Depression (Oldpeak)</label>
+              <input type="number" step="0.1" name="oldpeak" class="form-control" placeholder="e.g. 1.5" required />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Slope of Peak Exercise ST</label>
+              <select name="slope" class="form-select" required>
+                <option value="">Select</option>
+                <option value="0">0 — Upsloping</option>
+                <option value="1">1 — Flat</option>
+                <option value="2">2 — Downsloping</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">No. of Major Vessels <small class="text-muted">(0–3)</small></label>
+              <input type="number" name="ca" class="form-control" min="0" max="3" placeholder="e.g. 0" required />
+            </div>
+            <div class="col-md-12">
+              <label class="form-label">Thalassemia</label>
+              <select name="thal" class="form-select" required>
+                <option value="">Select</option>
+                <option value="3">3 — Normal</option>
+                <option value="6">6 — Fixed Defect</option>
+                <option value="7">7 — Reversible Defect</option>
+              </select>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-danger w-100 mt-4 py-2 fw-bold">
+            <i class="bi bi-search-heart me-2"></i>Predict
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Results Panel ── -->
+  <div class="col-lg-5">
+    <div class="card shadow-sm border-0 h-100">
+      <div class="card-body p-4 d-flex flex-column align-items-center justify-content-center text-center">
+        {% if result %}
+          <i class="bi bi-heart-pulse-fill display-1
+            {{ 'text-danger' if 'Detected' in result else 'text-success' }} mb-3"></i>
+          <h4 class="fw-bold">Prediction Result</h4>
+          <div class="alert
+            {{ 'alert-danger' if 'Detected' in result else 'alert-success' }} w-100 mt-3">
+            <strong>{{ result }}</strong>
+          </div>
+          <div class="mt-2">
+            <p class="text-muted mb-1">Model Confidence</p>
+            <div class="progress" style="height: 22px; width: 220px;">
+              <div class="progress-bar
+                {{ 'bg-danger' if 'Detected' in result else 'bg-success' }} fw-bold"
+                role="progressbar"
+                <div class="progress-bar {{ 'bg-danger' if result == 'Heart Disease Detected' else 'bg-success' }} fw-bold"
+                    role="progressbar"
+                    style="width: {{ confidence|default(0) }}%;"
+                    aria-valuenow="{{ confidence|default(0) }}"
+                    aria-valuemin="0"
+                    aria-valuemax="100">
+                    {{ confidence|default(0) }}%
+                    </div>
+                aria-valuenow="{{ confidence }}"
+                aria-valuemin="0"
+                aria-valuemax="100">
+                {{ confidence }}%
+              </div>
+            </div>
+          </div>
+          <p class="text-muted small mt-4">
+            <i class="bi bi-info-circle"></i>
+            This is a probabilistic estimate, not a medical diagnosis.
+          </p>
+        {% else %}
+          <i class="bi bi-heart display-1 text-secondary mb-3"></i>
+          <h5 class="text-muted">Fill in the form and click <strong>Predict</strong><br />to see the result here.</h5>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
 

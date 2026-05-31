@@ -1,0 +1,99 @@
+/* ── Global ─────────────────────────────────────────────────────────────── */
+body {
+  background-color: #f4f6f9;
+  font-family: "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+}
+
+/* ── Sidebar ─────────────────────────────────────────────────────────────── */
+#sidebar {
+  min-height: 100vh;
+  width: 250px;
+  min-width: 250px;
+  background: linear-gradient(180deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%);
+  box-shadow: 4px 0 12px rgba(0, 0, 0, 0.25);
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+#sidebar .nav-link {
+  border-radius: 8px;
+  padding: 10px 14px;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+
+#sidebar .nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.12);
+  transform: translateX(4px);
+}
+
+#sidebar .nav-link.active {
+  background-color: rgba(255, 255, 255, 0.22);
+  font-weight: 600;
+}
+
+/* ── Page Content ────────────────────────────────────────────────────────── */
+#page-content {
+  min-height: 100vh;
+  background-color: #f4f6f9;
+}
+
+/* ── Cards ───────────────────────────────────────────────────────────────── */
+.card {
+  border-radius: 14px;
+  transition: box-shadow 0.2s ease;
+}
+
+.card:hover {
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* ── Progress Bar ────────────────────────────────────────────────────────── */
+.progress {
+  border-radius: 12px;
+  background-color: #e9ecef;
+}
+
+.progress-bar {
+  border-radius: 12px;
+  font-size: 0.85rem;
+  transition: width 0.6s ease;
+}
+
+/* ── Form Controls ───────────────────────────────────────────────────────── */
+.form-control:focus,
+.form-select:focus {
+  border-color: #0f3460;
+  box-shadow: 0 0 0 0.2rem rgba(15, 52, 96, 0.2);
+}
+
+/* ── Buttons ─────────────────────────────────────────────────────────────── */
+.btn {
+  border-radius: 8px;
+  font-size: 0.95rem;
+  letter-spacing: 0.3px;
+}
+
+/* ── Responsive: collapse sidebar on small screens ───────────────────────── */
+@media (max-width: 768px) {
+  #sidebar {
+    width: 70px;
+    min-width: 70px;
+  }
+
+  #sidebar span,
+  #sidebar small,
+  #sidebar .nav-link span {
+    display: none;
+  }
+
+  #sidebar .nav-link {
+    justify-content: center;
+    padding: 12px;
+  }
+
+  #sidebar .nav-link i {
+    font-size: 1.3rem;
+  }
+}

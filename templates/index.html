@@ -1,1 +1,79 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="text-center py-5">
+  <i class="bi bi-heart-pulse-fill display-1 text-danger"></i>
+  <h1 class="display-5 fw-bold mt-3">Welcome to HealthCure</h1>
+  <p class="lead text-muted mt-2">
+    An AI-powered diagnostic assistant for early detection of
+    Heart Disease, Diabetes, and Pneumonia.
+  </p>
+  <hr class="w-50 mx-auto my-4" />
+</div>
+
+<div class="row g-4 justify-content-center">
+
+  <!-- Heart Disease Card -->
+  <div class="col-md-4">
+    <div class="card shadow-sm h-100 border-0">
+      <div class="card-body text-center p-4">
+        <i class="bi bi-heart-fill display-4 text-danger mb-3"></i>
+        <h4 class="card-title">Heart Disease</h4>
+        <p class="card-text text-muted">
+          Uses clinical measurements (cholesterol, blood pressure, ECG data)
+          to predict coronary artery disease risk via Random Forest.
+        </p>
+        <a href="{{ url_for('heart') }}" class="btn btn-danger mt-2">
+          <i class="bi bi-activity me-1"></i> Diagnose
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Diabetes Card -->
+  <div class="col-md-4">
+    <div class="card shadow-sm h-100 border-0">
+      <div class="card-body text-center p-4">
+        <i class="bi bi-droplet-fill display-4 text-warning mb-3"></i>
+        <h4 class="card-title">Diabetes</h4>
+        <p class="card-text text-muted">
+          Analyses BMI, glucose levels, and other metabolic indicators
+          to predict diabetes onset via a Support Vector Machine.
+        </p>
+        <a href="{{ url_for('diabetes') }}" class="btn btn-warning mt-2">
+          <i class="bi bi-clipboard2-pulse me-1"></i> Diagnose
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pneumonia Card -->
+  <div class="col-md-4">
+    <div class="card shadow-sm h-100 border-0">
+      <div class="card-body text-center p-4">
+        <i class="bi bi-lungs-fill display-4 text-info mb-3"></i>
+        <h4 class="card-title">Pneumonia</h4>
+        <p class="card-text text-muted">
+          Analyses chest X-ray images using a MobileNetV2 deep learning
+          model to detect pneumonia infection.
+        </p>
+        <a href="{{ url_for('pneumonia') }}" class="btn btn-info mt-2">
+          <i class="bi bi-image me-1"></i> Diagnose
+        </a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Disclaimer -->
+<div class="alert alert-secondary mt-5 text-center small">
+  <i class="bi bi-info-circle me-1"></i>
+  <strong>Disclaimer:</strong> HealthCure is a prototype for academic purposes only.
+  It is <strong>not</strong> a substitute for professional medical advice.
+  Always consult a qualified physician for diagnosis and treatment.
+</div>
+
+{% endblock %}
 
