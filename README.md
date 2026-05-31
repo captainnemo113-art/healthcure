@@ -136,15 +136,15 @@ Add screenshots to the `screenshots/` folder and update the links below.
 
 ### Heart Disease Prediction
 
-![Heart Disease Prediction](screenshots/heart-result.png)
+![Heart Disease Prediction](screenshots/heart.png)
 
 ### Diabetes Prediction
 
-![Diabetes Prediction](screenshots/diabetes-result.png)
+![Diabetes Prediction](screenshots/diabetes.png)
 
 ### Pneumonia Detection
 
-![Pneumonia Detection](screenshots/pneumonia-result.png)
+![Pneumonia Detection](screenshots/pneumonia.png)
 
 ### Prediction History
 
