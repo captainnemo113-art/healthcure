@@ -2,8 +2,10 @@
 
 {% block content %}
 
-<h2 class="fw-bold mb-1"><i class="bi bi-lungs-fill text-info me-2"></i>Pneumonia Detection</h2>
-<p class="text-muted mb-4">Upload a chest X-ray image (PNG or JPG) for AI analysis.</p>
+<div class="page-heading">
+  <h2 class="fw-bold mb-1"><i class="bi bi-lungs-fill text-info me-2"></i>Pneumonia Detection</h2>
+  <p class="mb-0">Upload a chest X-ray image for AI analysis.</p>
+</div>
 
 <div class="row g-4">
 
@@ -63,18 +65,26 @@
           </div>
           <div class="mt-2">
             <p class="text-muted mb-1">Model Confidence</p>
-            <div class="progress" style="height: 22px; width: 220px;">
-              <div
-                class="progress-bar {{ 'bg-danger' if result == 'Pneumonia Detected' else 'bg-success' }} fw-bold"
-                role="progressbar"
-                style="width: {{ confidence|default(0) }}%;"
-                aria-valuenow="{{ confidence|default(0) }}"
-                aria-valuemin="0"
-                aria-valuemax="100"
-              >
-                {{ confidence|default(0) }}%
-              </div>
-            </div>
+           {% set confidence_value = confidence|default(0) %}
+
+<div class="progress" style="height: 22px; width: 220px;">
+  <div
+    class="progress-bar {{ 'bg-danger' if result == 'Pneumonia Detected' else 'bg-success' }} fw-bold"
+    role="progressbar"
+    data-confidence="{{ confidence_value }}"
+    aria-valuenow="{{ confidence_value }}"
+    aria-valuemin="0"
+    aria-valuemax="100"
+  >
+    {{ confidence_value }}%
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll("[data-confidence]").forEach((bar) => {
+    bar.style.width = `${bar.dataset.confidence}%`;
+  });
+</script>
           </div>
           <p class="text-muted small mt-4">
             <i class="bi bi-info-circle"></i>
