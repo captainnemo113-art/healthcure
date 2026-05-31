@@ -144,7 +144,7 @@ Add screenshots to the `screenshots/` folder and update the links below.
 
 ### Pneumonia Detection
 
-![Pneumonia Detection](screenshots/pneumonia.png)
+![Pneumonia Detection](screenshots/Pneumonia.png)
 
 ### Prediction History
 
