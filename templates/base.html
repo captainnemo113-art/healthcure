@@ -27,6 +27,24 @@
   <!-- Sidebar -->
   <nav id="sidebar" class="d-flex flex-column p-3 text-white">
 
+    <hr class="text-white" />
+
+{% if current_user.is_authenticated %}
+  <small class="text-secondary mb-2">Logged in as {{ current_user.name }}</small>
+
+  <a href="{{ url_for('logout') }}" class="nav-link text-white">
+    <i class="bi bi-box-arrow-right me-2"></i> Logout
+  </a>
+{% else %}
+  <a href="{{ url_for('login') }}" class="nav-link text-white">
+    <i class="bi bi-box-arrow-in-right me-2"></i> Login
+  </a>
+
+  <a href="{{ url_for('register') }}" class="nav-link text-white">
+    <i class="bi bi-person-plus me-2"></i> Register
+  </a>
+{% endif %}
+
     <a href="{{ url_for('index') }}" class="d-flex align-items-center mb-4 text-white text-decoration-none">
       <i class="bi bi-heart-pulse-fill fs-3 me-2 text-danger"></i>
       <span class="fs-4 fw-bold">HealthCure</span>
@@ -61,13 +79,19 @@
         <a href="{{ url_for('pneumonia') }}"
            class="nav-link text-white {{ 'active' if request.endpoint == 'pneumonia' }}">
           <i class="bi bi-lungs-fill me-2 text-info"></i> Pneumonia
+          <li class="nav-item mb-1">
+  <a href="{{ url_for('history') }}"
+     class="nav-link text-white {{ 'active' if request.endpoint == 'history' }}">
+    <i class="bi bi-clock-history me-2 text-primary"></i> History
+  </a>
+</li>
         </a>
       </li>
 
     </ul>
 
     <hr class="text-white" />
-    <small class="text-secondary">© 2024 HealthCure &mdash; Final Year Project</small>
+    <small class="text-secondary">© 2026 HealthCure &mdash; Final Year Project</small>
   </nav>
   <!-- /Sidebar -->
 
