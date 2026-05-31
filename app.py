@@ -21,7 +21,7 @@ import tensorflow as tf
 
 # ── App Configuration ─────────────────────────────────────────────────────────
 app = Flask(__name__)
-app.secret_key = "healthcure-secret-2024"   # change in production
+app.secret_key = os.environ.get("SECRET_KEY", "healthcure-dev-secret")
 
 UPLOAD_FOLDER  = os.path.join("static", "uploads")
 ALLOWED_EXTS   = {"png", "jpg", "jpeg"}
@@ -40,22 +40,42 @@ _diabetes_scaler  = None
 _pneumonia_model  = None
 
 
-def load_models():
-    """Load all models once and cache them in module-level variables."""
+def load_heart_model():
+    """Load the heart model only when a heart prediction is requested."""
     global _heart_model, _heart_scaler
-    global _diabetes_model, _diabetes_scaler
-    global _pneumonia_model
 
     if _heart_model is None:
         _heart_model     = joblib.load("models/heart_model.pkl")
         _heart_scaler    = joblib.load("models/scaler_heart.pkl")
 
+    return _heart_model, _heart_scaler
+
+
+def load_diabetes_model():
+    """Load the diabetes model only when a diabetes prediction is requested."""
+    global _diabetes_model, _diabetes_scaler
+
     if _diabetes_model is None:
         _diabetes_model  = joblib.load("models/diabetes_model.pkl")
         _diabetes_scaler = joblib.load("models/scaler_diabetes.pkl")
 
+    return _diabetes_model, _diabetes_scaler
+
+
+def load_pneumonia_model():
+    """Load the image model only when an X-ray prediction is requested."""
+    global _pneumonia_model
+
     if _pneumonia_model is None:
         _pneumonia_model = tf.keras.models.load_model("models/pneumonia_model.h5")
+
+    return _pneumonia_model
+
+
+@app.route("/healthz")
+def healthz():
+    """Cheap route for deployment checks; does not load ML models."""
+    return {"status": "ok"}
 
 
 # ── Utility Helpers ───────────────────────────────────────────────────────────
@@ -91,7 +111,7 @@ def heart():
     confidence = None
 
     if request.method == "POST":
-        load_models()
+        heart_model, heart_scaler = load_heart_model()
         try:
             # Collect the 13 UCI Cleveland features from the form
             features = [
@@ -111,10 +131,10 @@ def heart():
             ]
 
             X = np.array(features).reshape(1, -1)
-            X_scaled = _heart_scaler.transform(X)
+            X_scaled = heart_scaler.transform(X)
 
-            prediction  = _heart_model.predict(X_scaled)[0]
-            prob        = _heart_model.predict_proba(X_scaled)[0]
+            prediction  = heart_model.predict(X_scaled)[0]
+            prob        = heart_model.predict_proba(X_scaled)[0]
             confidence  = round(float(max(prob)) * 100, 2)
             result      = "Heart Disease Detected" if prediction == 1 else "No Heart Disease Detected"
 
@@ -132,7 +152,7 @@ def diabetes():
     confidence = None
 
     if request.method == "POST":
-        load_models()
+        diabetes_model, diabetes_scaler = load_diabetes_model()
         try:
             features = [
                 float(request.form["pregnancies"]),
@@ -146,10 +166,10 @@ def diabetes():
             ]
 
             X = np.array(features).reshape(1, -1)
-            X_scaled = _diabetes_scaler.transform(X)
+            X_scaled = diabetes_scaler.transform(X)
 
-            prediction  = _diabetes_model.predict(X_scaled)[0]
-            prob        = _diabetes_model.predict_proba(X_scaled)[0]
+            prediction  = diabetes_model.predict(X_scaled)[0]
+            prob        = diabetes_model.predict_proba(X_scaled)[0]
             confidence  = round(float(max(prob)) * 100, 2)
             result      = "Diabetic" if prediction == 1 else "Non-Diabetic"
 
@@ -168,7 +188,7 @@ def pneumonia():
     img_path   = None
 
     if request.method == "POST":
-        load_models()
+        pneumonia_model = load_pneumonia_model()
 
         if "xray" not in request.files:
             flash("No file part in request.", "danger")
@@ -192,7 +212,7 @@ def pneumonia():
 
         # Preprocess and predict
         img_array   = preprocess_xray(save_path)
-        raw_score   = float(_pneumonia_model.predict(img_array)[0][0])
+        raw_score   = float(pneumonia_model.predict(img_array)[0][0])
 
         # MobileNetV2 with sigmoid: score > 0.5 → PNEUMONIA (class 1 in generator)
         if raw_score > 0.5:
@@ -213,4 +233,3 @@ def pneumonia():
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=5000)
-
