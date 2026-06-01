@@ -10,4 +10,4 @@ services:
       - key: SECRET_KEY
         generateValue: true
       - key: DATABASE_URL
-        value: sqlite:///healthcure.db
+        value: postgresql://healthcure_db_user:4GAHXJD72MeNLxR1IgN5IouekkOXdhaV@dpg-d8e8npi8qa3s73b97l6g-a/healthcure_db

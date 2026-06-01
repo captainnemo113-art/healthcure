@@ -313,6 +313,8 @@ DATABASE_URL=your-database-url
 
 The repository includes a `.python-version` file to ensure Render uses a Python version compatible with the ML dependencies.
 
+The app is prepared for deployment on Render using `render.yaml`, `gunicorn`, and environment variables.
+
 ## Dataset Notes
 
 This project uses healthcare datasets for academic learning and model training. The chest X-ray model is trained using image data, while the heart disease and diabetes models use tabular clinical data.
